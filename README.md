@@ -1,3 +1,3 @@
-# editbox README
+# Edit Box
 
-This is the README for your extension "editbox".
+Edit Box is a document management plug-in that relies on the Git platform

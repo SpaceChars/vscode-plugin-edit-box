@@ -1,23 +1,27 @@
 {
-    "name": "editbox",
+    "name": "edit-box",
     "displayName": "Edit Box",
-    "description": "Edit Box",
+    "description": "Edit Box is a document management plug-in that relies on the Git platform",
     "version": "0.0.1",
     "publisher": "EditBox",
     "engines": {
         "vscode": "^1.72.0"
     },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/SpaceChars/vscode-plugin-edit-box.git"
+    },
     "categories": [
         "Other"
     ],
     "activationEvents": [
-        "onCommand:editbox.helloWorld"
+        "onCommand:edit-box.helloWorld"
     ],
     "main": "./dist/extension.js",
     "contributes": {
         "commands": [
             {
-                "command": "editbox.helloWorld",
+                "command": "edit-box.helloWorld",
                 "title": "Hello World"
             }
         ]
