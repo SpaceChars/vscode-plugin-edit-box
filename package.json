@@ -4,38 +4,126 @@
     "description": "Edit Box is a document management plug-in that relies on the Git platform",
     "version": "0.0.1",
     "publisher": "EditBox",
+    "author": {
+        "name": "Space Chars",
+        "email": "cxjfun@163.com"
+    },
+    "icon": "images/logo.png",
     "engines": {
-        "vscode": "^1.72.0"
+        "vscode": "^1.51.0"
     },
     "repository": {
         "type": "git",
         "url": "https://github.com/SpaceChars/vscode-plugin-edit-box.git"
     },
+    "license": "SEE LICENSE IN LICENSE",
     "categories": [
         "Other"
     ],
     "activationEvents": [
-        "onCommand:edit-box.helloWorld"
+        "onView:editbox.views.Home",
+        "onView:editbox.views.documents",
+        "onView:editbox.views.storeRepository",
+        "onCommand:editbox.addRepository",
+        "onStartupFinished"
     ],
     "main": "./dist/extension.js",
     "contributes": {
+        "colors": [
+            {
+                "id": "logo.color",
+                "description": "Edit Box Logo Color",
+                "defaults": {
+                    "dark": "#00d2d3",
+                    "light": "#34ace0",
+                    "highContrast": "#34ace0",
+                    "highContrastLight": "#34ace0"
+                }
+            }
+        ],
+        "icons": {
+            "icon-logo": {
+                "description": "Edit box Logo Icon",
+                "default": {
+                    "fontPath": "iconfont.woff",
+                    "fontCharacter": "\\E600"
+                }
+            },
+            "icon-repository": {
+                "description": "Storage Repository Icon",
+                "default": {
+                    "fontPath": "iconfont.woff",
+                    "fontCharacter": "\\EB51"
+                }
+            },
+            "icon-file": {
+                "description": "File Document Icon",
+                "default": {
+                    "fontPath": "iconfont.woff",
+                    "fontCharacter": "\\EABE"
+                }
+            },
+            "icon-folder": {
+                "description": "Foleder Document icon",
+                "default": {
+                    "fontPath": "iconfont.woff",
+                    "fontCharacter": "\\EC17"
+                }
+            },
+            "icon-open-folder": {
+                "description": "Foleder Open Icon",
+                "default": {
+                    "fontPath": "iconfont.woff",
+                    "fontCharacter": "\\E601"
+                }
+            }
+        },
+        "configuration": {
+            "title": "Editbox",
+            "properties": {
+                "editbox.work.root": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Work Space Root Directory"
+                }
+            }
+        },
         "commands": [
             {
-                "command": "edit-box.helloWorld",
-                "title": "Hello World"
+                "command": "editbox.addRepository",
+                "title": "Add Storage Repository"
             }
-        ]
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "edit-box-panel",
+                    "title": "Edit Box",
+                    "icon": "$(icon-logo)"
+                }
+            ]
+        },
+        "views": {
+            "edit-box-panel": [
+                {
+                    "id": "editbox.views.documents",
+                    "name": "Documents",
+                    "visibility": "visible"
+                },
+                {
+                    "id": "editbox.views.storeRepository",
+                    "name": "Store Repository",
+                    "visibility": "visible"
+                }
+            ]
+        }
     },
     "scripts": {
-        "vscode:prepublish": "npm run package",
         "compile": "webpack",
         "watch": "webpack --watch",
-        "package": "webpack --mode production --devtool hidden-source-map",
-        "compile-tests": "tsc -p . --outDir out",
-        "watch-tests": "tsc -p . -w --outDir out",
-        "pretest": "npm run compile-tests && npm run compile && npm run lint",
-        "lint": "eslint src --ext ts",
-        "test": "node ./out/test/runTest.js"
+        "vscode:prepublish": "npm run package",
+        "package": "vsce package",
+        "publish": "vsce publish"
     },
     "devDependencies": {
         "@types/vscode": "^1.72.0",
