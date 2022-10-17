@@ -23,6 +23,19 @@ export function registerCommand(command: string, callback: () => void): Disposab
     return c;
 }
 
+let _treeViewProviderMap: Map<string, TreeDataProvider<TreeItem>> = new Map();
+
+/**
+ * 根据视图id获取视图Provider
+ * @param viewId 视图id
+ * @returns
+ */
+export function getTreeViewProvider<T extends TreeDataProvider<TreeItem>>(
+    viewId: string
+): T | undefined {
+    return <T>_treeViewProviderMap.get(viewId);
+}
+
 /**
  * 注册树型视图
  * @param command
@@ -32,6 +45,8 @@ export function registerTreeView(
     viewId: string,
     provider: TreeDataProvider<TreeItem>
 ): TreeView<TreeItem> {
+    _treeViewProviderMap.set(viewId, provider);
+
     return useApp().window.createTreeView(viewId, {
         treeDataProvider: provider
     });

@@ -1,10 +1,12 @@
 import { Disposable, ExtensionContext, registerCommand } from "../Function";
 import Repository from "./Repository";
+import Documents from "./Documents";
+import Git from "./Git";
 
 /**
  * 命令配置列表
  */
-const _commands: CommandOptions[] = [...Repository];
+const _commands: CommandOptions[] = [...Repository, ...Documents, ...Git];
 
 /**
  * 命令实例列表

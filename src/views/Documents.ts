@@ -1,4 +1,5 @@
 import {
+    Event,
     ProviderResult,
     ThemeColor,
     ThemeIcon,
@@ -20,6 +21,7 @@ export class DocumentTreeItem extends TreeItem {
 }
 
 export class NodeDocumentsTreeViewProvider implements TreeDataProvider<DocumentTreeItem> {
+    
     constructor(private nodePath?: string) {}
 
     getTreeItem(element: DocumentTreeItem): TreeItem | Thenable<TreeItem> {
@@ -35,6 +37,8 @@ export class NodeDocumentsTreeViewProvider implements TreeDataProvider<DocumentT
     }
 
     private getRootNodes(): ProviderResult<DocumentTreeItem[]> {
-        return [new DocumentTreeItem("测试", "1", TreeItemCollapsibleState.Expanded)];
+        return [
+            // new DocumentTreeItem("测试", "1", TreeItemCollapsibleState.Expanded)
+        ];
     }
 }
