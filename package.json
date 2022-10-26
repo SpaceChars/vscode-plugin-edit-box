@@ -27,8 +27,9 @@
         "onCommand:editbox.enableVSCodeGit",
         "onCommand:editbox.addRepository",
         "onCommand:editbox.removeRepository",
-        "onCommand:editbox.editRepository",
-        "onCommand:editbox.settedMasterRepository",
+        "onCommand:editbox.renameRepository",
+        "onCommand:editbox.changeRepositoryFolder",
+        "onCommand:editbox.changeMasterRepository",
         "onCommand:editbox.refreshRepository",
         "onCommand:editbox.syncDocument",
         "onStartupFinished"
@@ -136,22 +137,25 @@
             },
             {
                 "command": "editbox.addRepository",
-                "title": "Add Storage Repository",
+                "title": "Add Repository",
                 "icon": "$(icon-add)"
             },
             {
                 "command": "editbox.removeRepository",
-                "title": "Remove Storage Repository",
+                "title": "Remove Repository",
                 "icon": "$(icon-delete)"
             },
             {
-                "command": "editbox.editRepository",
-                "title": "Edit Storage Repository",
-                "icon": "$(icon-edit)"
+                "command": "editbox.renameRepository",
+                "title": "Rename Repository"
             },
             {
-                "command": "editbox.settedMasterRepository",
-                "title": "Setted Master Repository",
+                "command": "editbox.changeRepositoryFolder",
+                "title": "Change Repository Folder"
+            },
+            {
+                "command": "editbox.changeMasterRepository",
+                "title": "Change Master Repository",
                 "icon": "$(icon-change)"
             },
             {
@@ -185,19 +189,24 @@
             ],
             "view/item/context": [
                 {
-                    "command": "editbox.editRepository",
-                    "when": "view==editbox.views.storeRepository",
-                    "group": "inline"
-                },
-                {
                     "command": "editbox.removeRepository",
                     "when": "view==editbox.views.storeRepository",
-                    "group": "inline"
+                    "group": "1_actions"
                 },
                 {
-                    "command": "editbox.settedMasterRepository",
+                    "command": "editbox.renameRepository",
                     "when": "view==editbox.views.storeRepository",
-                    "group": "inline"
+                    "group": "1_actions"
+                },
+                {
+                    "command": "editbox.changeRepositoryFolder",
+                    "when": "view==editbox.views.storeRepository",
+                    "group": "1_actions"
+                },
+                {
+                    "command": "editbox.changeMasterRepository",
+                    "when": "view==editbox.views.storeRepository",
+                    "group": "1_actions"
                 }
             ]
         },

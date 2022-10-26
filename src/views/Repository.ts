@@ -3,7 +3,6 @@ import {
     Event,
     EventEmitter,
     ProviderResult,
-    registerTreeView,
     ThemeColor,
     ThemeIcon,
     TreeDataProvider,
@@ -29,7 +28,11 @@ export class StorageRepositoryTreeItem extends TreeItem {
         public readonly collapsibleState: TreeItemCollapsibleState
     ) {
         super(label, collapsibleState);
-        this.iconPath = new ThemeIcon("icon-repository", new ThemeColor("logo.color"));
+
+        this.iconPath = new ThemeIcon(
+            "icon-repository",
+            isMaster ? new ThemeColor("logo.color") : undefined
+        );
         this.description = folder;
     }
 }
@@ -65,15 +68,18 @@ export class NodeStorageRepositoryTreeViewProvider
 
     private getRootNodes(): StorageRepositoryTreeItem[] {
         const repositoryList = getRepositoryList();
-        return repositoryList.map<StorageRepositoryTreeItem>((item) => {
-            return new StorageRepositoryTreeItem(
-                item.name,
-                item.name,
-                item.folder,
-                item.master,
-                TreeItemCollapsibleState.Collapsed
-            );
-        });
+        const result = repositoryList
+            .sort((a) => (a.master ? -1 : 1))
+            .map<StorageRepositoryTreeItem>((item) => {
+                return new StorageRepositoryTreeItem(
+                    item.name,
+                    item.name,
+                    item.folder,
+                    item.master,
+                    TreeItemCollapsibleState.None
+                );
+            });
+        return result;
     }
 
     resolveTreeItem(
