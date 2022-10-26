@@ -56,6 +56,15 @@ export function updateRepository(value: WorkProjectOptions, index?: number): The
 }
 
 /**
+ * 根据名称获取仓库
+ * @param name 
+ * @returns 
+ */
+export function getRepository(name: string): WorkProjectOptions | undefined {
+    return getRepositoryList().find((item) => item.name === name);
+}
+
+/**
  * 设置/修改仓库别名
  * @param name  仓库别名
  */

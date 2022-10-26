@@ -6,6 +6,8 @@ export * from "./Others";
 
 export * from "./System";
 
+export * from "./File";
+
 export function useApp() {
     return vscode;
 }

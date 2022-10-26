@@ -1,12 +1,13 @@
 import { WindowAlertType } from "../Enums";
 import { alert } from "../Function";
+import { refreshDocuemnts } from "../Function/Documents";
 import {
+    getRepository,
     getRepositoryList,
     refreshRepositoryList,
     resetRepositoryList,
     setRepositoryAlias,
-    setRepositoryLocalFolder,
-    updateRepository
+    setRepositoryLocalFolder
 } from "../Function/Repository";
 import { CommandOptions } from "../Types";
 
@@ -19,6 +20,9 @@ const _result: CommandOptions[] = [
                     setRepositoryLocalFolder(opt.name).then((opt) => {
                         if (opt.result === 1) {
                             refreshRepositoryList();
+                            if (getRepository(opt.name)?.master) {
+                                refreshDocuemnts();
+                            }
                         }
                     });
                 } else if (opt.result === 0) {
@@ -43,6 +47,9 @@ const _result: CommandOptions[] = [
 
             resetRepositoryList(repositoryList).then(() => {
                 refreshRepositoryList();
+                if (target?.master) {
+                    refreshDocuemnts();
+                }
             });
         }
     },
@@ -62,6 +69,9 @@ const _result: CommandOptions[] = [
             setRepositoryLocalFolder(args[0].name).then((opt) => {
                 if (opt.result === 1) {
                     refreshRepositoryList();
+                    if (getRepository(opt.name)?.master) {
+                        refreshDocuemnts();
+                    }
                 }
             });
         }
@@ -87,6 +97,7 @@ const _result: CommandOptions[] = [
 
             resetRepositoryList(repositoryList).then(() => {
                 refreshRepositoryList();
+                refreshDocuemnts();
             });
         }
     },
