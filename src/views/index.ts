@@ -1,12 +1,8 @@
+import { ViewType } from "@/common/Enums";
 import { ExtensionContext, registerTreeView, TreeView, Webview } from "@/common/Function";
 import { TreeItem } from "vscode";
 import { NodeDocumentsTreeViewProvider } from "./Documents";
-import { NodeStorageRepositoryTreeViewProvider } from "./StorageRepository";
-
-export enum ViewType {
-    TreeView = 0,
-    WebView = 1
-}
+import { NodeStorageRepositoryTreeViewProvider } from "./Repository";
 
 export interface ViewConfigOptions {
     id: string;

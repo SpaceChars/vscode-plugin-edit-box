@@ -1,18 +1,38 @@
-import { NodeStorageRepositoryTreeViewProvider } from "@/views/StorageRepository";
-import { CommandOptions } from ".";
-import { alert, getTreeViewProvider } from "../Function";
+import { NodeStorageRepositoryTreeViewProvider } from "@/views/Repository";
+import { alert, getTreeViewProvider, setConfiguration } from "../Function";
+import {
+    getRepositoryList,
+    refreshRepositoryList,
+    setRepositoryAlias,
+    setRepositoryLocalFolder
+} from "../Function/Repository";
+import { CommandOptions } from "../Types";
 
 const _result: CommandOptions[] = [
     {
         id: "editbox.addRepository",
-        event: () => {
-            alert("Add Storage Repository!");
+        event: (context) => {
+            setRepositoryAlias().then((name) => {
+                if (name) {
+                    setRepositoryLocalFolder(name).then((value) => {
+                        if (value) {
+                            alert("Add Storage Repository");
+                            refreshRepositoryList();
+                        }
+                    });
+                }
+            });
         }
     },
     {
         id: "editbox.removeRepository",
-        event: () => {
-            alert("Remove Storage Repository!");
+        event: (context, args) => {
+            let repositoryList = getRepositoryList();
+            repositoryList = repositoryList.filter((item) => item.name !== args[0].name);
+            setConfiguration("work.project", repositoryList).then(() => {
+                alert("Remove Storage Repository!");
+                refreshRepositoryList();
+            });
         }
     },
     {
@@ -30,12 +50,7 @@ const _result: CommandOptions[] = [
     {
         id: "editbox.refreshRepository",
         event: () => {
-            //获取视图
-            const provider = getTreeViewProvider<NodeStorageRepositoryTreeViewProvider>(
-                "editbox.views.storeRepository"
-            );
-            //刷新
-            provider?.onRefresh();
+            refreshRepositoryList();
             //提示
             alert("Refresh Repository finished!");
         }

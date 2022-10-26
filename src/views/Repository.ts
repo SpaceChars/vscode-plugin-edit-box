@@ -10,6 +10,7 @@ import {
     TreeItem,
     TreeItemCollapsibleState
 } from "@/common/Function";
+import { getRepositoryList } from "@/common/Function/Repository";
 
 export class StorageRepositoryTreeItem extends TreeItem {
     /**
@@ -22,14 +23,14 @@ export class StorageRepositoryTreeItem extends TreeItem {
      */
     constructor(
         public readonly label: string,
-        private repository: string,
-        private username: string,
-        private password: string,
+        private name: string,
+        private folder: string,
+        private isMaster: boolean,
         public readonly collapsibleState: TreeItemCollapsibleState
     ) {
         super(label, collapsibleState);
         this.iconPath = new ThemeIcon("icon-repository", new ThemeColor("logo.color"));
-        this.description = "测试";
+        this.description = folder;
     }
 }
 
@@ -63,9 +64,16 @@ export class NodeStorageRepositoryTreeViewProvider
     }
 
     private getRootNodes(): StorageRepositoryTreeItem[] {
-        return [
-            // new StorageRepositoryTreeItem("仓库", "", "", "", TreeItemCollapsibleState.Collapsed)
-        ];
+        const repositoryList = getRepositoryList();
+        return repositoryList.map<StorageRepositoryTreeItem>((item) => {
+            return new StorageRepositoryTreeItem(
+                item.name,
+                item.name,
+                item.folder,
+                item.master,
+                TreeItemCollapsibleState.Collapsed
+            );
+        });
     }
 
     resolveTreeItem(

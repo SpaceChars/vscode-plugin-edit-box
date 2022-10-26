@@ -122,10 +122,10 @@
         "configuration": {
             "title": "Editbox",
             "properties": {
-                "editbox.work.root": {
-                    "type": "string",
-                    "default": "",
-                    "description": "Work Space Root Directory"
+                "editbox.work.project": {
+                    "type": "array",
+                    "default": [],
+                    "description": "Project List"
                 }
             }
         },
@@ -218,7 +218,7 @@
             },
             {
                 "view": "editbox.views.storeRepository",
-                "contents": "No Repository found \n[Add Repository](command:editbox.addRepository)",
+                "contents": "No found Repository \n[Add Repository](command:editbox.addRepository)",
                 "when": "config.git.enabled"
             },
             {

@@ -1,11 +1,12 @@
-import { CommandOptions } from ".";
-import { alert, useApp } from "../Function";
+import { alert, ConfigurationTarget, getGlobalConfiguration } from "../Function";
+import { CommandOptions } from "../Types";
 
 const _result: CommandOptions[] = [
     {
         id: "editbox.enableVSCodeGit",
         event: (context) => {
-            context.globalState.update("git.enabled", true);
+            const gitConfig = getGlobalConfiguration("git");
+            gitConfig.update("enabled", true, ConfigurationTarget.Global);
             alert("Enabled VSCode Git!");
         }
     }
