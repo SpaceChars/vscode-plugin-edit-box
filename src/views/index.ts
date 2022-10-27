@@ -12,7 +12,7 @@ export interface ViewConfigOptions {
 
 const _viewConfigList: ViewConfigOptions[] = [
     {
-        id: "editbox.views.storeRepository",
+        id: "editbox.views.Repository",
         type: ViewType.TreeView,
         getInstance(context) {
             return registerTreeView(this.id, new NodeStorageRepositoryTreeViewProvider());

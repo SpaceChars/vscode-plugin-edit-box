@@ -14,7 +14,7 @@ import { NodeStorageRepositoryTreeViewProvider } from "@/views/Repository";
  * @returns
  */
 export function getRepositoryList(): WorkProjectOptions[] {
-    return getConfiguration<WorkProjectOptions[]>("work.project", []);
+    return getConfiguration<WorkProjectOptions[]>("work.repositorys", []);
 }
 
 /**
@@ -23,7 +23,7 @@ export function getRepositoryList(): WorkProjectOptions[] {
 export function refreshRepositoryList() {
     //获取视图
     const provider = getTreeViewProvider<NodeStorageRepositoryTreeViewProvider>(
-        "editbox.views.storeRepository"
+        "editbox.views.Repository"
     );
     //刷新
     provider?.onRefresh();
@@ -35,7 +35,7 @@ export function refreshRepositoryList() {
  * @returns
  */
 export function resetRepositoryList(value: WorkProjectOptions[]): Thenable<void> {
-    return setConfiguration("work.project", value);
+    return setConfiguration("work.repositorys", value);
 }
 
 /**
@@ -52,16 +52,43 @@ export function updateRepository(value: WorkProjectOptions, index?: number): The
     } else {
         list.push(value);
     }
-    return setConfiguration("work.project", list);
+    return setConfiguration("work.repositorys", list);
 }
 
 /**
  * 根据名称获取仓库
- * @param name 
- * @returns 
+ * @param name
+ * @returns
  */
 export function getRepository(name: string): WorkProjectOptions | undefined {
     return getRepositoryList().find((item) => item.name === name);
+}
+
+/**
+ * 更改主仓库
+ * @param name
+ * @returns
+ */
+export function changeMasterRepository(name: string): Thenable<void> {
+    const repositoryList = getRepositoryList();
+
+    const masterIndex = repositoryList.findIndex((item) => item.master);
+    if (masterIndex >= 0) {
+        const master = repositoryList[masterIndex];
+        master.master = false;
+        repositoryList[masterIndex] = master;
+    }
+
+    const targetIndex = repositoryList.findIndex((item) => item.name === name);
+    if (targetIndex >= 0) {
+        const target = repositoryList[targetIndex];
+        target.master = true;
+        repositoryList[targetIndex] = target;
+    }
+
+    return resetRepositoryList(repositoryList).then(() => {
+        return setConfiguration("work.repositorys.master", name);
+    });
 }
 
 /**
@@ -109,7 +136,13 @@ export function setRepositoryAlias(name?: string): Thenable<SetRepositoryPropert
             };
         } else if (value && !name) {
             //新增——有值
-            updateRepository(new WorkProjectOptions(value, "", repositoryList.length === 0));
+            const isMaster = repositoryList.length === 0;
+            updateRepository(new WorkProjectOptions(value, "", isMaster)).then(() => {
+                if (isMaster) {
+                    changeMasterRepository(value);
+                }
+            });
+
             return {
                 name: value,
                 result: 2

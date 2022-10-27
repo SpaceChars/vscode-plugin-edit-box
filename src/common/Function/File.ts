@@ -1,4 +1,5 @@
-import { accessSync, readdirSync, statSync } from "fs";
+import { accessSync, readdirSync, statSync, constants, Dirent } from "fs";
+import { globalIgoreFiles } from "../Variable";
 
 /**
  * 判断文件是否存在
@@ -7,7 +8,7 @@ import { accessSync, readdirSync, statSync } from "fs";
  */
 export function pathExists(file: string): boolean {
     try {
-        accessSync(file);
+        accessSync(file, constants.F_OK);
     } catch (err) {
         return false;
     }
@@ -19,8 +20,15 @@ export function pathExists(file: string): boolean {
  * @param dir
  * @returns
  */
-export function getFilesByDir(dir: string) {
-    return pathExists(dir) ? readdirSync(dir, { encoding: "utf8", withFileTypes: true }) : [];
+export function getFilesByDir(dir: string): Dirent[] {
+    if (pathExists(dir) && isDir(dir)) {
+        const files = readdirSync(dir, { encoding: "utf8", withFileTypes: true });
+        return files.filter(
+            (item) => globalIgoreFiles.find((file) => file === item.name) === undefined
+        );
+    } else {
+        return [];
+    }
 }
 
 /**

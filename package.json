@@ -23,7 +23,7 @@
     "activationEvents": [
         "onView:editbox.views.Home",
         "onView:editbox.views.documents",
-        "onView:editbox.views.storeRepository",
+        "onView:editbox.views.Repository",
         "onCommand:editbox.enableVSCodeGit",
         "onCommand:editbox.addRepository",
         "onCommand:editbox.removeRepository",
@@ -123,10 +123,15 @@
         "configuration": {
             "title": "Editbox",
             "properties": {
-                "editbox.work.project": {
+                "editbox.work.repositorys": {
                     "type": "array",
                     "default": [],
-                    "description": "Project List"
+                    "description": "Repositorys List"
+                },
+                "editbox.work.repositorys.master": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Master Repository"
                 }
             }
         },
@@ -173,12 +178,12 @@
             "view/title": [
                 {
                     "command": "editbox.addRepository",
-                    "when": "view==editbox.views.storeRepository",
+                    "when": "view==editbox.views.Repository",
                     "group": "navigation"
                 },
                 {
                     "command": "editbox.refreshRepository",
-                    "when": "view==editbox.views.storeRepository",
+                    "when": "view==editbox.views.Repository",
                     "group": "navigation"
                 },
                 {
@@ -190,22 +195,22 @@
             "view/item/context": [
                 {
                     "command": "editbox.removeRepository",
-                    "when": "view==editbox.views.storeRepository",
+                    "when": "view==editbox.views.Repository",
                     "group": "1_actions"
                 },
                 {
                     "command": "editbox.renameRepository",
-                    "when": "view==editbox.views.storeRepository",
+                    "when": "view==editbox.views.Repository",
                     "group": "1_actions"
                 },
                 {
                     "command": "editbox.changeRepositoryFolder",
-                    "when": "view==editbox.views.storeRepository",
+                    "when": "view==editbox.views.Repository",
                     "group": "1_actions"
                 },
                 {
                     "command": "editbox.changeMasterRepository",
-                    "when": "view==editbox.views.storeRepository",
+                    "when": "view==editbox.views.Repository&&editbox.work.repositorys.master!=viewItem",
                     "group": "1_actions"
                 }
             ]
@@ -226,13 +231,13 @@
                 "when": "!config.git.enabled"
             },
             {
-                "view": "editbox.views.storeRepository",
+                "view": "editbox.views.Repository",
                 "contents": "No found Repository \n[Add Repository](command:editbox.addRepository)",
                 "when": "config.git.enabled"
             },
             {
                 "view": "editbox.views.documents",
-                "contents": "Don't Select Master Repository",
+                "contents": "Don't Select Master Repository Or No Found Files",
                 "when": "config.git.enabled"
             }
         ],
@@ -251,7 +256,7 @@
                     "visibility": "visible"
                 },
                 {
-                    "id": "editbox.views.storeRepository",
+                    "id": "editbox.views.Repository",
                     "name": "Store Repository",
                     "when": "config.git.enabled",
                     "visibility": "visible"

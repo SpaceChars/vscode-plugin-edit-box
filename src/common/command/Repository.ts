@@ -2,6 +2,7 @@ import { WindowAlertType } from "../Enums";
 import { alert } from "../Function";
 import { refreshDocuemnts } from "../Function/Documents";
 import {
+    changeMasterRepository,
     getRepository,
     getRepositoryList,
     refreshRepositoryList,
@@ -35,20 +36,23 @@ const _result: CommandOptions[] = [
         id: "editbox.removeRepository",
         event: (context, args) => {
             let repositoryList = getRepositoryList();
-            const target = repositoryList.find((item) => item.name === args[0].name);
+            let name = args[0].name;
+            const target = repositoryList.find((item) => item.name === name);
 
-            repositoryList = repositoryList.filter((item) => item.name !== args[0].name);
+            repositoryList = repositoryList.filter((item) => item.name !== name);
             //判断删除的仓库是否是主仓库
             if (target?.master && repositoryList.length) {
                 const first = repositoryList[0];
                 first.master = true;
                 repositoryList[0] = first;
+                name = first.name;
             }
 
             resetRepositoryList(repositoryList).then(() => {
                 refreshRepositoryList();
                 if (target?.master) {
                     refreshDocuemnts();
+                    changeMasterRepository(name);
                 }
             });
         }
@@ -79,23 +83,7 @@ const _result: CommandOptions[] = [
     {
         id: "editbox.changeMasterRepository",
         event: (context, args) => {
-            const repositoryList = getRepositoryList();
-
-            const masterIndex = repositoryList.findIndex((item) => item.master);
-            if (masterIndex >= 0) {
-                const master = repositoryList[masterIndex];
-                master.master = false;
-                repositoryList[masterIndex] = master;
-            }
-
-            const targetIndex = repositoryList.findIndex((item) => item.name === args[0].name);
-            if (targetIndex >= 0) {
-                const target = repositoryList[targetIndex];
-                target.master = true;
-                repositoryList[targetIndex] = target;
-            }
-
-            resetRepositoryList(repositoryList).then(() => {
+            changeMasterRepository(args[0].name).then(() => {
                 refreshRepositoryList();
                 refreshDocuemnts();
             });

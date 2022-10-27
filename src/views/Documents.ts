@@ -55,7 +55,11 @@ export class NodeDocumentsTreeViewProvider implements TreeDataProvider<DocumentT
         if (!element) {
             return this.getRootNodes();
         } else {
-            const path = element.rootPath + "\\" + element.abstreactPath;
+            let path =
+                element.rootPath +
+                (/.*\\+$/.test(element.rootPath) ? "" : "\\") +
+                element.abstreactPath;
+
             if (isDir(path)) {
                 const files = getFilesByDir(path);
                 return files.map((file) => {
