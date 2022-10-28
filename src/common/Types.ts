@@ -58,19 +58,23 @@ export interface StoreModuleOptions {
     namespace?: boolean;
     state: { [propName: string]: any };
     mutations?: {
-        [propName: string]: <T>(
-            state: { [propName: string]: any },
-            commit: (prop: string, ...args: any) => any,
+        [propName: string]: (
+            store: {
+                state: { [propName: string]: any };
+                commit: (prop: string, ...args: any) => any;
+            },
             ...args: any
-        ) => T | void;
+        ) => any;
     };
     actions?: {
-        [propName: string]: <T>(
-            state: { [propName: string]: any },
-            commit: (prop: string, ...args: any) => any,
-            dispatch: (prop: string, ...args: any) => Promise<any | Promise<any>>,
+        [propName: string]: (
+            store: {
+                state: { [propName: string]: any };
+                commit: (prop: string, ...args: any) => any;
+                dispatch: (prop: string, ...args: any) => Promise<any | Promise<any>>;
+            },
             ...args: any
-        ) => Promise<T | void>;
+        ) => Promise<any>;
     };
 }
 

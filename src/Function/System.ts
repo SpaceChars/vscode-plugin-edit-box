@@ -13,6 +13,10 @@ import * as vscode from "vscode";
 import { StoreModule } from "@/store/core";
 import { useStore } from "@/store";
 
+/**
+ * 调用应用
+ * @returns
+ */
 export function useApp() {
     return vscode;
 }
@@ -87,33 +91,4 @@ export function registerCommand(command: string, callback: (...args: any[]) => a
     const c = useApp().commands.registerCommand(command, callback);
     useExtensionContext().subscriptions.push(c);
     return c;
-}
-
-let _treeViewProviderMap: Map<string, TreeDataProvider<TreeItem>> = new Map();
-
-/**
- * 根据视图id获取视图Provider
- * @param viewId 视图id
- * @returns
- */
-export function getTreeViewProvider<T extends TreeDataProvider<TreeItem>>(
-    viewId: string
-): T | undefined {
-    return <T>_treeViewProviderMap.get(viewId);
-}
-
-/**
- * 注册树型视图
- * @param command
- * @returns
- */
-export function registerTreeView(
-    viewId: string,
-    provider: TreeDataProvider<TreeItem>
-): TreeView<TreeItem> {
-    _treeViewProviderMap.set(viewId, provider);
-
-    return useApp().window.createTreeView(viewId, {
-        treeDataProvider: provider
-    });
 }

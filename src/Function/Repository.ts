@@ -13,7 +13,7 @@ import { WindowAlertType } from "@/common/Enums";
 import { NodeStorageRepositoryTreeViewProvider } from "@/views/Repository";
 import { alert, fileAlert, inputAlert } from "./Others";
 import { createSourceControl } from "./Scm";
-import { getConfiguration, getTreeViewProvider, setConfiguration } from "./System";
+import { getConfiguration, getSystemStoreModule, setConfiguration } from "./System";
 
 /**
  * 获取仓库列表
@@ -28,7 +28,8 @@ export function getRepositoryList(): WorkRepositoryOptions[] {
  */
 export function refreshRepositoryList() {
     //获取视图
-    const provider = getTreeViewProvider<NodeStorageRepositoryTreeViewProvider>(
+    const provider = getSystemStoreModule().commit<NodeStorageRepositoryTreeViewProvider>(
+        "getTreeViewProvider",
         "editbox.views.Repository"
     );
     //刷新

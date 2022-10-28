@@ -1,6 +1,6 @@
 import { ViewType } from "@/common/Enums";
 import { ExtensionContext, TreeView, Webview } from "@/common/Types";
-import { registerTreeView } from "@/Function/System";
+import { getSystemStoreModule } from "@/Function/System";
 import { TreeItem } from "vscode";
 import { NodeDocumentsTreeViewProvider } from "./Documents";
 import { NodeStorageRepositoryTreeViewProvider } from "./Repository";
@@ -16,14 +16,22 @@ const _viewConfigList: ViewConfigOptions[] = [
         id: "editbox.views.Repository",
         type: ViewType.TreeView,
         getInstance(context) {
-            return registerTreeView(this.id, new NodeStorageRepositoryTreeViewProvider());
+            return getSystemStoreModule().commit(
+                "registerTreeView",
+                this.id,
+                new NodeStorageRepositoryTreeViewProvider()
+            );
         }
     },
     {
         id: "editbox.views.documents",
         type: ViewType.TreeView,
         getInstance(context) {
-            return registerTreeView(this.id, new NodeDocumentsTreeViewProvider());
+            return getSystemStoreModule().commit(
+                "registerTreeView",
+                this.id,
+                new NodeDocumentsTreeViewProvider()
+            );
         }
     }
 ];

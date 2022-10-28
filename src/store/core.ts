@@ -67,22 +67,6 @@ export class StoreModule {
     ) {}
 
     /**
-     * 设置属性getter、setter
-     */
-    private statedefineProperty() {
-        Object.keys(this.options.state).forEach((prop) => {
-            Object.defineProperty(this.options.state, prop, {
-                set: function (val) {
-                    prop = val;
-                },
-                get: function () {
-                    return prop;
-                }
-            });
-        });
-    }
-
-    /**
      * 更新配置
      * @param opt
      */
@@ -95,8 +79,6 @@ export class StoreModule {
         options["actions"] = Object.assign({}, options.actions, opt.actions);
 
         this.options = options;
-
-        this.statedefineProperty();
     }
 
     /**
@@ -104,7 +86,7 @@ export class StoreModule {
      * @param prop 字段
      * @param args 参数
      */
-    public commit(prop: string, ...args: any): any {
+    public commit<T>(prop: string, ...args: any): T {
         const mutations = this.options.mutations || {};
         const event = mutations[prop];
 
@@ -112,7 +94,7 @@ export class StoreModule {
             throw new Error("mutation Event Method undefind.");
         }
 
-        return event(this.options.state, this.commit, ...args);
+        return event({ state: this.options.state, commit: this.commit }, ...args);
     }
 
     /**
@@ -130,7 +112,10 @@ export class StoreModule {
             }
 
             try {
-                const result = event(this.options.state, this.commit, this.dispatch, args);
+                const result = event(
+                    { state: this.options.state, commit: this.commit, dispatch: this.dispatch },
+                    args
+                );
 
                 //如果返回结果为Promise
                 if (result && Object.prototype.toString.call(result) === "[object Promise]") {
