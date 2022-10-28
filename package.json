@@ -123,6 +123,11 @@
         "configuration": {
             "title": "Editbox",
             "properties": {
+                "editbox.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable Edit Box Plugin"
+                },
                 "editbox.work.repositorys": {
                     "type": "array",
                     "default": [],
@@ -210,7 +215,7 @@
                 },
                 {
                     "command": "editbox.changeMasterRepository",
-                    "when": "view==editbox.views.Repository&&editbox.work.repositorys.master!=viewItem",
+                    "when": "view==editbox.views.Repository",
                     "group": "1_actions"
                 }
             ]
@@ -220,7 +225,8 @@
                 {
                     "id": "edit-box-panel",
                     "title": "Edit Box",
-                    "icon": "$(icon-logo)"
+                    "icon": "$(icon-logo)",
+                    "when": "editbox.enabled"
                 }
             ]
         },
@@ -247,6 +253,12 @@
                     "id": "editbox.views.enableGit",
                     "name": "Enable Git",
                     "when": "!config.git.enabled",
+                    "visibility": "visible"
+                },
+                {
+                    "id": "editbox.views.initializeRepository",
+                    "name": "Enable Git",
+                    "when": "!config.git.enabled&&editbox.work.repositorys.master==''",
                     "visibility": "visible"
                 },
                 {
