@@ -1,5 +1,6 @@
-import { alert, ConfigurationTarget, getGlobalConfiguration } from "../Function";
-import { CommandOptions } from "../Types";
+import { alert } from "@/Function/Others";
+import { getGlobalConfiguration } from "@/Function/System";
+import { CommandOptions, ConfigurationTarget } from "../common/Types";
 
 const _result: CommandOptions[] = [
     {

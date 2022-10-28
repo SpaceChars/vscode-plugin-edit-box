@@ -1,5 +1,6 @@
 import { ViewType } from "@/common/Enums";
-import { ExtensionContext, registerTreeView, TreeView, Webview } from "@/common/Function";
+import { ExtensionContext, TreeView, Webview } from "@/common/Types";
+import { registerTreeView } from "@/Function/System";
 import { TreeItem } from "vscode";
 import { NodeDocumentsTreeViewProvider } from "./Documents";
 import { NodeStorageRepositoryTreeViewProvider } from "./Repository";

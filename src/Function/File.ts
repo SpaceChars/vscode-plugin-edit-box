@@ -1,5 +1,5 @@
 import { accessSync, readdirSync, statSync, constants, Dirent } from "fs";
-import { globalIgoreFiles } from "../Variable";
+import { globalIgoreFiles } from "@/common/Variable";
 
 /**
  * 判断文件是否存在

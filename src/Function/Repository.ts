@@ -1,20 +1,26 @@
-import { alert, fileAlert, inputAlert } from "./Others";
 import {
+    SetRepositoryPropertyResult,
+    WorkRepositoryOptions,
+    Uri,
     InputBoxValidationSeverity,
-    getConfiguration,
-    setConfiguration,
-    getTreeViewProvider
-} from ".";
-import { SetRepositoryPropertyResult, WorkProjectOptions } from "../Types";
-import { WindowAlertType } from "../Enums";
+    Task,
+    ShellExecution,
+    tasks,
+    TaskGroup,
+    TaskScope
+} from "@/common/Types";
+import { WindowAlertType } from "@/common/Enums";
 import { NodeStorageRepositoryTreeViewProvider } from "@/views/Repository";
+import { alert, fileAlert, inputAlert } from "./Others";
+import { createSourceControl } from "./Scm";
+import { getConfiguration, getTreeViewProvider, setConfiguration } from "./System";
 
 /**
  * 获取仓库列表
  * @returns
  */
-export function getRepositoryList(): WorkProjectOptions[] {
-    return getConfiguration<WorkProjectOptions[]>("work.repositorys", []);
+export function getRepositoryList(): WorkRepositoryOptions[] {
+    return getConfiguration<WorkRepositoryOptions[]>("work.repositorys", []);
 }
 
 /**
@@ -34,7 +40,7 @@ export function refreshRepositoryList() {
  * @param value
  * @returns
  */
-export function resetRepositoryList(value: WorkProjectOptions[]): Thenable<void> {
+export function resetRepositoryList(value: WorkRepositoryOptions[]): Thenable<void> {
     return setConfiguration("work.repositorys", value);
 }
 
@@ -43,7 +49,7 @@ export function resetRepositoryList(value: WorkProjectOptions[]): Thenable<void>
  * @param value 值
  * @param index 下标
  */
-export function updateRepository(value: WorkProjectOptions, index?: number): Thenable<void> {
+export function updateRepository(value: WorkRepositoryOptions, index?: number): Thenable<void> {
     const list = getRepositoryList();
     index ||= list.findIndex((item) => item.name === value.name);
 
@@ -60,7 +66,7 @@ export function updateRepository(value: WorkProjectOptions, index?: number): The
  * @param name
  * @returns
  */
-export function getRepository(name: string): WorkProjectOptions | undefined {
+export function getRepository(name: string): WorkRepositoryOptions | undefined {
     return getRepositoryList().find((item) => item.name === name);
 }
 
@@ -96,7 +102,7 @@ export function changeMasterRepository(name: string): Thenable<void> {
  * @param name  仓库别名
  */
 export function setRepositoryAlias(name?: string): Thenable<SetRepositoryPropertyResult> {
-    const repositoryList: WorkProjectOptions[] = getRepositoryList();
+    const repositoryList: WorkRepositoryOptions[] = getRepositoryList();
 
     let targetRepoIndex = repositoryList.findIndex((item) => item.name === name);
 
@@ -137,7 +143,7 @@ export function setRepositoryAlias(name?: string): Thenable<SetRepositoryPropert
         } else if (value && !name) {
             //新增——有值
             const isMaster = repositoryList.length === 0;
-            updateRepository(new WorkProjectOptions(value, "", isMaster)).then(() => {
+            updateRepository(new WorkRepositoryOptions(value, "", isMaster)).then(() => {
                 if (isMaster) {
                     changeMasterRepository(value);
                 }
@@ -173,7 +179,7 @@ export function setRepositoryLocalFolder(name: string): Thenable<SetRepositoryPr
         canSelectFiles: false,
         canSelectFolders: true
     }).then((value) => {
-        const projectList: WorkProjectOptions[] = getRepositoryList();
+        const projectList: WorkRepositoryOptions[] = getRepositoryList();
         const targetRepoIndex = projectList.findIndex((item) => item.name === name);
 
         if (targetRepoIndex < 0) {
@@ -208,10 +214,32 @@ export function setRepositoryLocalFolder(name: string): Thenable<SetRepositoryPr
  * @param name 仓库别名
  */
 export function initialScmControl(name: string) {
-    const projectList: WorkProjectOptions[] = getRepositoryList();
+    const projectList: WorkRepositoryOptions[] = getRepositoryList();
 
-    const targetRepoIndex = projectList.findIndex((item) => item.name === name);
-    const targetRepo = projectList[targetRepoIndex];
+    let targetRepo = projectList.find((item) => item.name === name);
+
+    const scm = createSourceControl(Uri.file(targetRepo?.folder || ""));
+
+    // tasks
+    //     .executeTask(
+    //         new Task(
+    //             { type: "EditBox" },
+    //             TaskScope.Global,
+    //             "Clone Git Repository",
+    //             "Edit Box",
+    //             new ShellExecution(
+    //                 "git clone https://github.com/SpaceChars/vscode-plugin-edit-box.git",
+    //                 {
+    //                     cwd: "E:\\s1"
+    //                 }
+    //             )
+    //         )
+    //     )
+    //     .then((execution) => {
+    //         execution.terminate();
+    //     });
+
+    console.log("init SCM");
 }
 
 /**

@@ -1,16 +1,18 @@
-import { WindowAlertType } from "../Enums";
-import { alert } from "../Function";
-import { refreshDocuemnts } from "../Function/Documents";
+import { WindowAlertType } from "@/common/Enums";
+import { CommandOptions } from "@/common/Types";
+import { refreshDocuemnts } from "@/Function/Documents";
+import { alert } from "@/Function/Others";
 import {
     changeMasterRepository,
     getRepository,
     getRepositoryList,
+    initialScmControl,
     refreshRepositoryList,
     resetRepositoryList,
     setRepositoryAlias,
     setRepositoryLocalFolder
-} from "../Function/Repository";
-import { CommandOptions } from "../Types";
+} from "@/Function/Repository";
+import { getSystemStoreModule } from "@/Function/System";
 
 const _result: CommandOptions[] = [
     {
@@ -20,6 +22,7 @@ const _result: CommandOptions[] = [
                 if (opt.result === 2) {
                     setRepositoryLocalFolder(opt.name).then((opt) => {
                         if (opt.result === 1) {
+                            initialScmControl(opt.name);
                             refreshRepositoryList();
                             if (getRepository(opt.name)?.master) {
                                 refreshDocuemnts();
@@ -35,6 +38,8 @@ const _result: CommandOptions[] = [
     {
         id: "editbox.removeRepository",
         event: (context, args) => {
+            
+
             let repositoryList = getRepositoryList();
             let name = args[0].name;
             const target = repositoryList.find((item) => item.name === name);
@@ -52,6 +57,8 @@ const _result: CommandOptions[] = [
                 refreshRepositoryList();
                 if (target?.master) {
                     refreshDocuemnts();
+                }
+                if (target?.master && repositoryList.length) {
                     changeMasterRepository(name);
                 }
             });

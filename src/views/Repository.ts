@@ -7,9 +7,10 @@ import {
     ThemeIcon,
     TreeDataProvider,
     TreeItem,
-    TreeItemCollapsibleState
-} from "@/common/Function";
-import { getRepositoryList } from "@/common/Function/Repository";
+    TreeItemCollapsibleState,
+    Uri
+} from "@/common/Types";
+import { getRepositoryList } from "@/Function/Repository";
 
 export class StorageRepositoryTreeItem extends TreeItem {
     /**
@@ -33,6 +34,8 @@ export class StorageRepositoryTreeItem extends TreeItem {
             "icon-repository",
             isMaster ? new ThemeColor("logo.color") : undefined
         );
+        this.resourceUri=Uri.file(folder);
+        this.contextValue = label;
         this.description = folder;
     }
 }

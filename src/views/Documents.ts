@@ -1,16 +1,15 @@
 import {
     Event,
     EventEmitter,
-    getFilesByDir,
-    isDir,
     ProviderResult,
     ThemeColor,
     ThemeIcon,
     TreeDataProvider,
     TreeItem,
     TreeItemCollapsibleState
-} from "@/common/Function";
-import { getRepositoryList } from "@/common/Function/Repository";
+} from "@/common/Types";
+import { getFilesByDir, isDir } from "@/Function/File";
+import { getRepositoryList } from "@/Function/Repository";
 
 export class DocumentTreeItem extends TreeItem {
     constructor(public readonly label: string, private root: string, private path: string) {

@@ -1,8 +1,13 @@
 import { ExtensionContext } from "vscode";
 
+export * from "vscode";
+
+/**
+ * 命令配置信息
+ */
 export interface CommandOptions {
     id: string;
-    event: (context: ExtensionContext, ...args: any[]) => void;
+    event(context: ExtensionContext, ...args: any[]): void;
 }
 
 /**
@@ -31,7 +36,10 @@ export interface SetRepositoryPropertyResult {
     result: number;
 }
 
-export class WorkProjectOptions {
+/**
+ * 工作空间仓库配置信息
+ */
+export class WorkRepositoryOptions {
     name: string;
     folder: string;
     master: boolean;
@@ -41,4 +49,34 @@ export class WorkProjectOptions {
         this.folder = folder;
         this.master = master;
     }
+}
+
+/**
+ * 储存模块配置信息
+ */
+export interface StoreModuleOptions {
+    namespace?: boolean;
+    state: { [propName: string]: any };
+    mutations?: {
+        [propName: string]: <T>(
+            state: { [propName: string]: any },
+            commit: (prop: string, ...args: any) => any,
+            ...args: any
+        ) => T | void;
+    };
+    actions?: {
+        [propName: string]: <T>(
+            state: { [propName: string]: any },
+            commit: (prop: string, ...args: any) => any,
+            dispatch: (prop: string, ...args: any) => Promise<any | Promise<any>>,
+            ...args: any
+        ) => Promise<T | void>;
+    };
+}
+
+/**
+ * 储存全局配置信息
+ */
+export interface StoreConfigOptions {
+    modules: { [propName: string]: StoreModuleOptions };
 }

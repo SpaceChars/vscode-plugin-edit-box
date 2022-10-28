@@ -1,13 +1,7 @@
-import {
-    CancellationTokenSource,
-    Event,
-    EventEmitter,
-    InputBoxOptions,
-    OpenDialogOptions,
-    Uri,
-    useApp
-} from ".";
-import { WindowAlertType } from "../Enums";
+
+import { InputBoxOptions, OpenDialogOptions, Uri } from "@/common/Types";
+import { WindowAlertType } from "@/common/Enums";
+import { useApp } from "./System";
 
 /**
  * 弹窗

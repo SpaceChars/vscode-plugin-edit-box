@@ -1,15 +1,29 @@
 import { ConfigurationTarget } from "vscode";
-import {
-    Disposable,
-    ExtensionContext,
-    TreeDataProvider,
-    TreeItem,
-    TreeView,
-    useApp,
-    WorkspaceConfiguration
-} from ".";
 
-let _context: ExtensionContext;
+import {
+    ExtensionContext,
+    WorkspaceConfiguration,
+    Disposable,
+    TreeItem,
+    TreeDataProvider,
+    TreeView
+} from "@/common/Types";
+
+import * as vscode from "vscode";
+import { StoreModule } from "@/store/core";
+import { useStore } from "@/store";
+
+export function useApp() {
+    return vscode;
+}
+
+/**
+ * 获取系统储存模块
+ * @returns
+ */
+export function getSystemStoreModule(): StoreModule {
+    return useStore().getStoreModule("system");
+}
 
 /**
  * 获取全局配置
@@ -46,12 +60,22 @@ export function setConfiguration(
     return config.update(key, value, scope);
 }
 
+/**
+ * 获取扩展上下文信息
+ * @returns
+ */
 export function useExtensionContext(): ExtensionContext {
-    return _context;
+    const store = getSystemStoreModule();
+    return store.commit("getActiveContext");
 }
 
+/**
+ * 设置扩展上下文信息
+ * @param context
+ */
 export function setExtensionContext(context: ExtensionContext): void {
-    _context = context;
+    const store = getSystemStoreModule();
+    store.commit("setActiveContext", context);
 }
 
 /**
