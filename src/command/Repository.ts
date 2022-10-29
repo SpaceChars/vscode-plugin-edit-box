@@ -1,45 +1,53 @@
-import { WindowAlertType } from "@/common/Enums";
+import { MessageAlertType } from "@/common/Enums";
 import { CommandOptions } from "@/common/Types";
 import { refreshDocuemnts } from "@/Function/Documents";
-import { alert } from "@/Function/Others";
+import { selectFolder } from "@/Function/File";
+import { messageAlert } from "@/Function/Others";
 import {
     changeMasterRepository,
     getRepository,
     getRepositoryList,
-    initialScmControl,
     refreshRepositoryList,
     resetRepositoryList,
     setRepositoryAlias,
-    setRepositoryLocalFolder
+    setRepositoryLocalFolder,
+    setRepositoryType,
+    updateRepository
 } from "@/Function/Repository";
-import { getSystemStoreModule } from "@/Function/System";
+import { cloneRemoteRepository } from "@/Function/Scm";
 
 const _result: CommandOptions[] = [
     {
-        id: "editbox.addRepository",
+        id: "editbox.command.addRepository",
         event: () => {
             setRepositoryAlias().then((opt) => {
                 if (opt.result === 2) {
-                    setRepositoryLocalFolder(opt.name).then((opt) => {
-                        if (opt.result === 1) {
-                            initialScmControl(opt.name);
-                            refreshRepositoryList();
-                            if (getRepository(opt.name)?.master) {
-                                refreshDocuemnts();
-                            }
+                    const name = opt.name;
+                    setRepositoryType(name).then((type) => {
+                        if (type) {
+                            //获取回调返回值
+                            setRepositoryLocalFolder(
+                                name,
+                                type === "Local" ? selectFolder() : cloneRemoteRepository()
+                            ).then((value) => {
+                                if (value) {
+                                    refreshRepositoryList();
+                                    if (getRepository(opt.name)?.master) {
+                                        refreshDocuemnts();
+                                    }
+                                }
+                            });
                         }
                     });
                 } else if (opt.result === 0) {
-                    alert("Alias already exists", WindowAlertType.ERROR);
+                    messageAlert("Alias already exists", MessageAlertType.ERROR);
                 }
             });
         }
     },
     {
-        id: "editbox.removeRepository",
+        id: "editbox.command.removeRepository",
         event: (context, args) => {
-            
-
             let repositoryList = getRepositoryList();
             let name = args[0].name;
             const target = repositoryList.find((item) => item.name === name);
@@ -65,7 +73,7 @@ const _result: CommandOptions[] = [
         }
     },
     {
-        id: "editbox.renameRepository",
+        id: "editbox.command.renameRepository",
         event(context, args) {
             setRepositoryAlias(args[0].name).then((opt) => {
                 if (opt.result === 1 || opt.result === 0) {
@@ -75,12 +83,13 @@ const _result: CommandOptions[] = [
         }
     },
     {
-        id: "editbox.changeRepositoryFolder",
+        id: "editbox.command.changeRepositoryFolder",
         event(context, args) {
-            setRepositoryLocalFolder(args[0].name).then((opt) => {
-                if (opt.result === 1) {
+            const name = args[0].name;
+            setRepositoryLocalFolder(name, selectFolder()).then((value) => {
+                if (value) {
                     refreshRepositoryList();
-                    if (getRepository(opt.name)?.master) {
+                    if (getRepository(name)?.master) {
                         refreshDocuemnts();
                     }
                 }
@@ -88,7 +97,7 @@ const _result: CommandOptions[] = [
         }
     },
     {
-        id: "editbox.changeMasterRepository",
+        id: "editbox.command.changeMasterRepository",
         event: (context, args) => {
             changeMasterRepository(args[0].name).then(() => {
                 refreshRepositoryList();
@@ -97,10 +106,9 @@ const _result: CommandOptions[] = [
         }
     },
     {
-        id: "editbox.refreshRepository",
+        id: "editbox.command.refreshRepository",
         event: () => {
             refreshRepositoryList();
-            alert("Refresh Repository finished!");
         }
     }
 ];

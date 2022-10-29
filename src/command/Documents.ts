@@ -1,14 +1,15 @@
 import { CommandOptions } from "@/common/Types";
 import { refreshDocuemnts } from "@/Function/Documents";
 
-import { alert } from "@/Function/Others";
-
 const _result: CommandOptions[] = [
     {
-        id: "editbox.syncDocument",
+        id: "editbox.command.syncDocument",
+        event: () => {}
+    },
+    {
+        id: "editbox.command.refreshDocument",
         event: () => {
             refreshDocuemnts();
-            alert("Synchronization Document!");
         }
     }
 ];

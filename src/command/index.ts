@@ -3,12 +3,14 @@ import { Disposable, ExtensionContext, CommandOptions } from "@/common/Types";
 import Repository from "./Repository";
 import Documents from "./Documents";
 import Git from "./Git";
+import File from "./File";
+
 import { registerCommand } from "@/Function/System";
 
 /**
  * 命令配置列表
  */
-const _commands: CommandOptions[] = [...Repository, ...Documents, ...Git];
+const _commands: CommandOptions[] = [...Repository, ...Documents, ...Git, ...File];
 
 /**
  * 命令实例列表

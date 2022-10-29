@@ -4,8 +4,8 @@ import {
     ExtensionContext,
     WorkspaceConfiguration,
     Disposable,
-    TreeItem,
-    TreeDataProvider,
+    TextEditor,
+    TextEditorEdit,
     TreeView
 } from "@/common/Types";
 
@@ -84,11 +84,27 @@ export function setExtensionContext(context: ExtensionContext): void {
 
 /**
  * 注册命令
- * @param command
+ * @param command 命令id
+ * @param callback 回调
  * @returns
  */
 export function registerCommand(command: string, callback: (...args: any[]) => any): Disposable {
     const c = useApp().commands.registerCommand(command, callback);
+    useExtensionContext().subscriptions.push(c);
+    return c;
+}
+
+/**
+ * 注册文本编辑命令
+ * @param command 命令id
+ * @param callback 回调
+ * @returns
+ */
+export function registerTextEditorCommand(
+    command: string,
+    callback: (textEditor: TextEditor, edit: TextEditorEdit, ...args: any[]) => void
+): Disposable {
+    const c = useApp().commands.registerTextEditorCommand(command, callback);
     useExtensionContext().subscriptions.push(c);
     return c;
 }

@@ -11,14 +11,14 @@ const result: StoreModuleOptions = {
         getActiveContext({ state }) {
             return state.activeContext;
         },
-        setActiveContext({ state, commit }, value) {
+        setActiveContext({ state }, value) {
             state.activeContext = value;
         },
         getTreeViewProvider({ state }, viewId) {
             return state.treeViewProviderMap.get(viewId);
         },
-        registerTreeView({state},viewId,provider){
-            state.treeViewProviderMap.set(viewId,provider);
+        registerTreeView({ state }, viewId, provider) {
+            state.treeViewProviderMap.set(viewId, provider);
             return useApp().window.createTreeView(viewId, {
                 treeDataProvider: provider
             });

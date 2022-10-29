@@ -1,5 +1,8 @@
 import { accessSync, readdirSync, statSync, constants, Dirent } from "fs";
 import { globalIgoreFiles } from "@/common/Variable";
+import { fileAlert } from "./Others";
+
+import { Uri } from "@/common/Types";
 
 /**
  * 判断文件是否存在
@@ -23,9 +26,9 @@ export function pathExists(file: string): boolean {
 export function getFilesByDir(dir: string): Dirent[] {
     if (pathExists(dir) && isDir(dir)) {
         const files = readdirSync(dir, { encoding: "utf8", withFileTypes: true });
-        return files.filter(
-            (item) => globalIgoreFiles.find((file) => file === item.name) === undefined
-        );
+        return files
+            .filter((item) => globalIgoreFiles.find((file) => file === item.name) === undefined)
+            .sort((a) => (a.isDirectory() ? -1 : 1));
     } else {
         return [];
     }
@@ -47,7 +50,19 @@ export function isFile(file: string) {
  * @returns
  */
 export function isDir(file: string) {
-    //判断是否是文件夹 Boolean
     let stat = statSync(file);
     return stat.isDirectory();
+}
+
+/**
+ * 选择文件夹
+ * @returns
+ */
+export function selectFolder(): Thenable<Uri | undefined> {
+    return fileAlert({
+        canSelectFiles: false,
+        canSelectFolders: true
+    }).then((value) => {
+        return value ? value[0] : undefined;
+    });
 }

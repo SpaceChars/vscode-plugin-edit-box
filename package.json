@@ -24,14 +24,16 @@
         "onView:editbox.views.Home",
         "onView:editbox.views.documents",
         "onView:editbox.views.Repository",
-        "onCommand:editbox.enableVSCodeGit",
-        "onCommand:editbox.addRepository",
-        "onCommand:editbox.removeRepository",
-        "onCommand:editbox.renameRepository",
-        "onCommand:editbox.changeRepositoryFolder",
-        "onCommand:editbox.changeMasterRepository",
-        "onCommand:editbox.refreshRepository",
-        "onCommand:editbox.syncDocument",
+        "onCommand:editbox.command.enableVSCodeGit",
+        "onCommand:editbox.command.addRepository",
+        "onCommand:editbox.command.removeRepository",
+        "onCommand:editbox.command.renameRepository",
+        "onCommand:editbox.command.changeRepositoryFolder",
+        "onCommand:editbox.command.changeMasterRepository",
+        "onCommand:editbox.command.refreshRepository",
+        "onCommand:editbox.command.syncDocument",
+        "onCommand:editbox.command.refreshDocument",
+        "onCommand:editbox.command.showInSourceManager",
         "onStartupFinished"
     ],
     "main": "./dist/extension.js",
@@ -56,67 +58,11 @@
                     "fontCharacter": "\\E600"
                 }
             },
-            "icon-repository": {
-                "description": "Storage Repository Icon",
+            "icon-master-repository": {
+                "description": "Master Storage Repository Icon",
                 "default": {
                     "fontPath": "iconfont.woff",
                     "fontCharacter": "\\EB51"
-                }
-            },
-            "icon-file": {
-                "description": "File Document Icon",
-                "default": {
-                    "fontPath": "iconfont.woff",
-                    "fontCharacter": "\\EABE"
-                }
-            },
-            "icon-folder": {
-                "description": "Foleder Document icon",
-                "default": {
-                    "fontPath": "iconfont.woff",
-                    "fontCharacter": "\\EC17"
-                }
-            },
-            "icon-close": {
-                "description": "close Icon",
-                "default": {
-                    "fontPath": "iconfont.woff",
-                    "fontCharacter": "\\E602"
-                }
-            },
-            "icon-delete": {
-                "description": "Delete Icon",
-                "default": {
-                    "fontPath": "iconfont.woff",
-                    "fontCharacter": "\\E68E"
-                }
-            },
-            "icon-add": {
-                "description": "Add Icon",
-                "default": {
-                    "fontPath": "iconfont.woff",
-                    "fontCharacter": "\\E617"
-                }
-            },
-            "icon-edit": {
-                "description": "Edit Icon",
-                "default": {
-                    "fontPath": "iconfont.woff",
-                    "fontCharacter": "\\E8AC"
-                }
-            },
-            "icon-change": {
-                "description": "Edit Icon",
-                "default": {
-                    "fontPath": "iconfont.woff",
-                    "fontCharacter": "\\EB75"
-                }
-            },
-            "icon-sync": {
-                "description": "Edit Icon",
-                "default": {
-                    "fontPath": "iconfont.woff",
-                    "fontCharacter": "\\E6DE"
                 }
             }
         },
@@ -142,81 +88,113 @@
         },
         "commands": [
             {
-                "command": "editbox.enableVSCodeGit",
-                "title": "Enabel VSCode Git Repository"
+                "command": "editbox.command.enableVSCodeGit",
+                "title": "Enabel VSCode Git Repository",
+                "icon": "$(git-branch)"
             },
             {
-                "command": "editbox.addRepository",
+                "command": "editbox.command.addRepository",
                 "title": "Add Repository",
-                "icon": "$(icon-add)"
+                "icon": "$(add)"
             },
             {
-                "command": "editbox.removeRepository",
+                "command": "editbox.command.removeRepository",
                 "title": "Remove Repository",
-                "icon": "$(icon-delete)"
+                "icon": "$(trash)"
             },
             {
-                "command": "editbox.renameRepository",
-                "title": "Rename Repository"
+                "command": "editbox.command.renameRepository",
+                "title": "Rename Repository",
+                "icon": "$(pencil)"
             },
             {
-                "command": "editbox.changeRepositoryFolder",
-                "title": "Change Repository Folder"
+                "command": "editbox.command.changeRepositoryFolder",
+                "title": "Change Repository Folder",
+                "icon": "$(folder-opened)"
             },
             {
-                "command": "editbox.changeMasterRepository",
-                "title": "Change Master Repository",
-                "icon": "$(icon-change)"
+                "command": "editbox.command.changeMasterRepository",
+                "title": "Change Master Repository"
             },
             {
-                "command": "editbox.refreshRepository",
+                "command": "editbox.command.refreshRepository",
                 "title": "Refresh Repository",
-                "icon": "$(icon-sync)"
+                "icon": "$(refresh)"
             },
             {
-                "command": "editbox.syncDocument",
+                "command": "editbox.command.syncDocument",
                 "title": "Synchronization Document",
-                "icon": "$(icon-sync)"
+                "icon": "$(sync)"
+            },
+            {
+                "command": "editbox.command.refreshDocument",
+                "title": "Refresh Document",
+                "icon": "$(refresh)"
+            },
+            {
+                "command": "editbox.command.showInSourceManager",
+                "title": "Show in Source Manager",
+                "icon": "$(folder-librar)"
+            },
+            {
+                "command": "editbox.command.showDiff",
+                "title": "Show Change Diff",
+                "icon": "$(diff)"
             }
         ],
         "menus": {
             "view/title": [
                 {
-                    "command": "editbox.addRepository",
+                    "command": "editbox.command.addRepository",
                     "when": "view==editbox.views.Repository",
                     "group": "navigation"
                 },
                 {
-                    "command": "editbox.refreshRepository",
+                    "command": "editbox.command.refreshRepository",
                     "when": "view==editbox.views.Repository",
                     "group": "navigation"
                 },
                 {
-                    "command": "editbox.syncDocument",
+                    "command": "editbox.command.refreshDocument",
+                    "when": "view==editbox.views.documents",
+                    "group": "navigation"
+                },
+                {
+                    "command": "editbox.command.syncDocument",
                     "when": "view==editbox.views.documents",
                     "group": "navigation"
                 }
             ],
             "view/item/context": [
                 {
-                    "command": "editbox.removeRepository",
+                    "command": "editbox.command.removeRepository",
                     "when": "view==editbox.views.Repository",
                     "group": "1_actions"
                 },
                 {
-                    "command": "editbox.renameRepository",
+                    "command": "editbox.command.renameRepository",
                     "when": "view==editbox.views.Repository",
                     "group": "1_actions"
                 },
                 {
-                    "command": "editbox.changeRepositoryFolder",
+                    "command": "editbox.command.changeRepositoryFolder",
                     "when": "view==editbox.views.Repository",
                     "group": "1_actions"
                 },
                 {
-                    "command": "editbox.changeMasterRepository",
+                    "command": "editbox.command.changeMasterRepository",
                     "when": "view==editbox.views.Repository",
                     "group": "1_actions"
+                },
+                {
+                    "command": "editbox.command.showInSourceManager",
+                    "when": "view==editbox.views.documents||view==editbox.views.Repository",
+                    "group": "2_actions"
+                },
+                {
+                    "command": "editbox.command.showDiff",
+                    "when": "view==editbox.views.documents",
+                    "group": "3_actions"
                 }
             ]
         },
@@ -233,12 +211,12 @@
         "viewsWelcome": [
             {
                 "view": "editbox.views.enableGit",
-                "contents": "1. Please the Check git tool is installed,if no-installed please click [link](https://git-scm.com/downloads) download and finish install .\n 2. If inestalled but no enable VSCode Git,please the enabled VSCode Git \n [Enabled Git](command:editbox.enableVSCodeGit)",
+                "contents": "1. Please the Check git tool is installed,if no-installed please click [link](https://git-scm.com/downloads) download and finish install .\n 2. If inestalled but no enable VSCode Git,please the enabled VSCode Git \n [Enabled Git](command:editbox.command.enableVSCodeGit)",
                 "when": "!config.git.enabled"
             },
             {
                 "view": "editbox.views.Repository",
-                "contents": "No found Repository \n[Add Repository](command:editbox.addRepository)",
+                "contents": "No found Repository \n[Add Repository](command:editbox.command.addRepository)",
                 "when": "config.git.enabled"
             },
             {

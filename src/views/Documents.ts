@@ -1,4 +1,5 @@
 import {
+    CancellationToken,
     Event,
     EventEmitter,
     ProviderResult,
@@ -6,20 +7,27 @@ import {
     ThemeIcon,
     TreeDataProvider,
     TreeItem,
-    TreeItemCollapsibleState
+    TreeItemCollapsibleState,
+    Uri
 } from "@/common/Types";
-import { getFilesByDir, isDir } from "@/Function/File";
+import { getFilesByDir, isDir, isFile } from "@/Function/File";
 import { getRepositoryList } from "@/Function/Repository";
 
 export class DocumentTreeItem extends TreeItem {
     constructor(public readonly label: string, private root: string, private path: string) {
-        const dir = isDir(root + "\\" + path);
+        const resourcePath = root + "\\" + path;
+
+        const dir = isDir(resourcePath);
         const collapsibleState: TreeItemCollapsibleState = dir
             ? TreeItemCollapsibleState.Collapsed
             : TreeItemCollapsibleState.None;
 
         super(label, collapsibleState);
-        this.iconPath = dir ? new ThemeIcon("icon-folder") : new ThemeIcon("icon-file");
+        this.iconPath = dir ? new ThemeIcon("folder") : new ThemeIcon("file");
+        this.resourceUri = Uri.file(resourcePath);
+        if (!dir) {
+            this.command = { command: "vscode.open", title: label, arguments: [this.resourceUri] };
+        }
     }
 
     public get rootPath(): string {

@@ -1,3 +1,4 @@
+import { RepositoryType, MessageAlertType } from "@/common/Enums";
 import {
     SetRepositoryPropertyResult,
     WorkRepositoryOptions,
@@ -9,9 +10,9 @@ import {
     TaskGroup,
     TaskScope
 } from "@/common/Types";
-import { WindowAlertType } from "@/common/Enums";
 import { NodeStorageRepositoryTreeViewProvider } from "@/views/Repository";
-import { alert, fileAlert, inputAlert } from "./Others";
+import { selectFolder } from "./File";
+import { messageAlert, fileAlert, inputAlert, quickPickAlert } from "./Others";
 import { createSourceControl } from "./Scm";
 import { getConfiguration, getSystemStoreModule, setConfiguration } from "./System";
 
@@ -59,6 +60,7 @@ export function updateRepository(value: WorkRepositoryOptions, index?: number): 
     } else {
         list.push(value);
     }
+
     return setConfiguration("work.repositorys", list);
 }
 
@@ -99,8 +101,9 @@ export function changeMasterRepository(name: string): Thenable<void> {
 }
 
 /**
- * 设置/修改仓库别名
- * @param name  仓库别名
+ * Setting Or Update Repository Alias
+ * @param name  Repository Alias
+ * @return
  */
 export function setRepositoryAlias(name?: string): Thenable<SetRepositoryPropertyResult> {
     const repositoryList: WorkRepositoryOptions[] = getRepositoryList();
@@ -144,11 +147,13 @@ export function setRepositoryAlias(name?: string): Thenable<SetRepositoryPropert
         } else if (value && !name) {
             //新增——有值
             const isMaster = repositoryList.length === 0;
-            updateRepository(new WorkRepositoryOptions(value, "", isMaster)).then(() => {
-                if (isMaster) {
-                    changeMasterRepository(value);
+            updateRepository({ name: value, master: isMaster, type: RepositoryType.Local }).then(
+                () => {
+                    if (isMaster) {
+                        changeMasterRepository(value);
+                    }
                 }
-            });
+            );
 
             return {
                 name: value,
@@ -171,138 +176,43 @@ export function setRepositoryAlias(name?: string): Thenable<SetRepositoryPropert
 }
 
 /**
- * 设置/更新仓库本地文件夹
- * @param name  仓库别名
- * @returns
+ * Setting Or Update Repository Type
+ * @param name Repository alias
+ * @returns Repository Type. If Cancel or repository not found. return value is undefined
  */
-export function setRepositoryLocalFolder(name: string): Thenable<SetRepositoryPropertyResult> {
-    return fileAlert({
-        canSelectFiles: false,
-        canSelectFolders: true
+export function setRepositoryType(name: string): Thenable<string | undefined> {
+    return quickPickAlert([RepositoryType.Local, RepositoryType.Remote], {
+        title: "Select Repository Type",
+        placeHolder: "Select Repository Type"
     }).then((value) => {
-        const projectList: WorkRepositoryOptions[] = getRepositoryList();
-        const targetRepoIndex = projectList.findIndex((item) => item.name === name);
-
-        if (targetRepoIndex < 0) {
-            alert("Not found repository", WindowAlertType.ERROR);
-
-            return {
-                name,
-                result: 5
-            };
-        }
-
-        if (!value) {
-            return {
-                name,
-                result: 3
-            };
-        }
-
-        const targetRepo = projectList[targetRepoIndex];
-        targetRepo.folder = value ? value[0].fsPath : "";
-        updateRepository(targetRepo, targetRepoIndex);
-
-        return {
-            name,
-            result: 1
-        };
-    });
-}
-
-/**
- * 初始化git
- * @param name 仓库别名
- */
-export function initialScmControl(name: string) {
-    const projectList: WorkRepositoryOptions[] = getRepositoryList();
-
-    let targetRepo = projectList.find((item) => item.name === name);
-
-    const scm = createSourceControl(Uri.file(targetRepo?.folder || ""));
-
-    // tasks
-    //     .executeTask(
-    //         new Task(
-    //             { type: "EditBox" },
-    //             TaskScope.Global,
-    //             "Clone Git Repository",
-    //             "Edit Box",
-    //             new ShellExecution(
-    //                 "git clone https://github.com/SpaceChars/vscode-plugin-edit-box.git",
-    //                 {
-    //                     cwd: "E:\\s1"
-    //                 }
-    //             )
-    //         )
-    //     )
-    //     .then((execution) => {
-    //         execution.terminate();
-    //     });
-
-    console.log("init SCM");
-}
-
-/**
- * 设置/更改仓库地址
- * @param name 仓库别名
- * @returns
- */
-export function setRepositoryUrl(name: string): Thenable<string | undefined> {
-    return inputAlert({
-        title: "Set Git Repository url",
-        placeHolder: "Repository URL",
-        prompt: "Git Repository url",
-        validateInput(value) {
-            const result = /^(https\:|git\@)+.*(\.git)$/g.test(value);
-            return result
-                ? null
-                : {
-                      message: "The Git Repository url can start with 'HTTPS' or 'SSH' only",
-                      severity: InputBoxValidationSeverity.Error
-                  };
+        const targetRepo = getRepository(name);
+        if (targetRepo && value) {
+            targetRepo.type = <RepositoryType>value;
+            return updateRepository(targetRepo).then(() => {
+                return value;
+            });
+        } else {
+            return undefined;
         }
     });
 }
 
 /**
- * 设置/更改仓库有用户名
- * @param name 仓库别名
- * @returns
+ * Setting Or Update Repository Local Folder
+ * @param name Repository alias
+ * @param folder Folder Uri
  */
-export function setRepositoryUsername(name?: string): Thenable<string | undefined> {
-    return inputAlert({
-        title: "Set Git Repository UserName",
-        placeHolder: "UserName",
-        prompt: "Git Repository UserName",
-        validateInput(value) {
-            return value
-                ? null
-                : {
-                      message: "The Git Repository User Name don't null",
-                      severity: InputBoxValidationSeverity.Error
-                  };
-        }
-    });
-}
-
-/**
- * 设置/更改仓库账户密码
- * @param name 仓库别名
- * @returns
- */
-export function setRepositoryPassword(name?: string): Thenable<string | undefined> {
-    return inputAlert({
-        title: "Set Git Repository Password",
-        placeHolder: "Passowrd",
-        prompt: "Git Repository Password",
-        validateInput(value) {
-            return value
-                ? null
-                : {
-                      message: "The Git Repository Password don't null",
-                      severity: InputBoxValidationSeverity.Error
-                  };
+export function setRepositoryLocalFolder(
+    name: string,
+    callack: Thenable<Uri | undefined>
+): Thenable<Uri | undefined> {
+    return callack.then((folder) => {
+        const targetRepo = getRepository(name);
+        if (targetRepo && folder) {
+            targetRepo.folder = folder.fsPath || "";
+            return updateRepository(targetRepo).then(() => folder);
+        } else {
+            return folder;
         }
     });
 }

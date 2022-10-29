@@ -88,13 +88,13 @@ export class StoreModule {
      */
     public commit<T>(prop: string, ...args: any): T {
         const mutations = this.options.mutations || {};
-        const event = mutations[prop];
+        const invoke = mutations[prop];
 
-        if (!event) {
+        if (!invoke) {
             throw new Error("mutation Event Method undefind.");
         }
 
-        return event({ state: this.options.state, commit: this.commit }, ...args);
+        return invoke({ state: this.options.state, commit: this.commit }, ...args);
     }
 
     /**
@@ -105,14 +105,14 @@ export class StoreModule {
     public dispatch(prop: string, ...args: any): Promise<any | Promise<any | void> | void> {
         return new Promise<any>((resolve, reject) => {
             const actions = this.options.actions || {};
-            const event = actions[prop];
+            const invoke = actions[prop];
 
-            if (!event) {
+            if (!invoke) {
                 throw new Error("Action Event Method undefind.");
             }
 
             try {
-                const result = event(
+                const result = invoke(
                     { state: this.options.state, commit: this.commit, dispatch: this.dispatch },
                     args
                 );

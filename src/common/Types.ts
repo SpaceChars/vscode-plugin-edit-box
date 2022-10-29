@@ -1,4 +1,5 @@
 import { ExtensionContext } from "vscode";
+import { RepositoryType } from "./Enums";
 
 export * from "vscode";
 
@@ -9,6 +10,8 @@ export interface CommandOptions {
     id: string;
     event(context: ExtensionContext, ...args: any[]): void;
 }
+
+// export type RepositoryType = "Local" | "Remote";
 
 /**
  * 设置仓库属性结果
@@ -39,16 +42,11 @@ export interface SetRepositoryPropertyResult {
 /**
  * 工作空间仓库配置信息
  */
-export class WorkRepositoryOptions {
+export interface WorkRepositoryOptions {
     name: string;
-    folder: string;
-    master: boolean;
-
-    constructor(name: string, folder: string, master: boolean) {
-        this.name = name;
-        this.folder = folder;
-        this.master = master;
-    }
+    folder?: string;
+    master?: boolean;
+    type: RepositoryType;
 }
 
 /**

@@ -16,9 +16,9 @@ export class StorageRepositoryTreeItem extends TreeItem {
     /**
      *
      * @param label 仓库别名
-     * @param repository 仓库地址
-     * @param username 用户名
-     * @param password 密码
+     * @param name 仓库别名
+     * @param folder 仓库文件夹
+     * @param isMaster 是否主仓库
      * @param collapsibleState 是否展开
      */
     constructor(
@@ -29,12 +29,11 @@ export class StorageRepositoryTreeItem extends TreeItem {
         public readonly collapsibleState: TreeItemCollapsibleState
     ) {
         super(label, collapsibleState);
+        this.iconPath = isMaster
+            ? new ThemeIcon("icon-master-repository", new ThemeColor("logo.color"))
+            : new ThemeIcon("globe");
 
-        this.iconPath = new ThemeIcon(
-            "icon-repository",
-            isMaster ? new ThemeColor("logo.color") : undefined
-        );
-        this.resourceUri=Uri.file(folder);
+        this.resourceUri = Uri.file(folder);
         this.contextValue = label;
         this.description = folder;
     }
@@ -77,8 +76,8 @@ export class NodeStorageRepositoryTreeViewProvider
                 return new StorageRepositoryTreeItem(
                     item.name,
                     item.name,
-                    item.folder,
-                    item.master,
+                    item.folder || "",
+                    item.master || false,
                     TreeItemCollapsibleState.None
                 );
             });
