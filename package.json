@@ -1,7 +1,7 @@
 {
     "name": "edit-box",
     "displayName": "Edit Box",
-    "description": "Edit Box is a document management plug-in that relies on the Git platform",
+    "description": "Edit Box is an editor that can manage multiple local folders at the same time. It can edit VSCode supported all documents in the folder",
     "version": "0.0.1",
     "publisher": "EditBox",
     "author": {
@@ -24,15 +24,10 @@
         "onView:editbox.views.Home",
         "onView:editbox.views.documents",
         "onView:editbox.views.Repository",
-        "onCommand:editbox.command.enableVSCodeGit",
         "onCommand:editbox.command.addRepository",
         "onCommand:editbox.command.removeRepository",
         "onCommand:editbox.command.renameRepository",
-        "onCommand:editbox.command.changeRepositoryFolder",
         "onCommand:editbox.command.changeMasterRepository",
-        "onCommand:editbox.command.refreshRepository",
-        "onCommand:editbox.command.syncDocument",
-        "onCommand:editbox.command.refreshDocument",
         "onCommand:editbox.command.showInSourceManager",
         "onStartupFinished"
     ],
@@ -83,15 +78,15 @@
                     "type": "string",
                     "default": "",
                     "description": "Master Repository"
+                },
+                "editbox.work.dcoments.word": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Master Repository"
                 }
             }
         },
         "commands": [
-            {
-                "command": "editbox.command.enableVSCodeGit",
-                "title": "Enabel VSCode Git Repository",
-                "icon": "$(git-branch)"
-            },
             {
                 "command": "editbox.command.addRepository",
                 "title": "Add Repository",
@@ -108,38 +103,13 @@
                 "icon": "$(pencil)"
             },
             {
-                "command": "editbox.command.changeRepositoryFolder",
-                "title": "Change Repository Folder",
-                "icon": "$(folder-opened)"
-            },
-            {
                 "command": "editbox.command.changeMasterRepository",
                 "title": "Change Master Repository"
-            },
-            {
-                "command": "editbox.command.refreshRepository",
-                "title": "Refresh Repository",
-                "icon": "$(refresh)"
-            },
-            {
-                "command": "editbox.command.syncDocument",
-                "title": "Synchronization Document",
-                "icon": "$(sync)"
-            },
-            {
-                "command": "editbox.command.refreshDocument",
-                "title": "Refresh Document",
-                "icon": "$(refresh)"
             },
             {
                 "command": "editbox.command.showInSourceManager",
                 "title": "Show in Source Manager",
                 "icon": "$(folder-librar)"
-            },
-            {
-                "command": "editbox.command.showDiff",
-                "title": "Show Change Diff",
-                "icon": "$(diff)"
             }
         ],
         "menus": {
@@ -147,21 +117,6 @@
                 {
                     "command": "editbox.command.addRepository",
                     "when": "view==editbox.views.Repository",
-                    "group": "navigation"
-                },
-                {
-                    "command": "editbox.command.refreshRepository",
-                    "when": "view==editbox.views.Repository",
-                    "group": "navigation"
-                },
-                {
-                    "command": "editbox.command.refreshDocument",
-                    "when": "view==editbox.views.documents",
-                    "group": "navigation"
-                },
-                {
-                    "command": "editbox.command.syncDocument",
-                    "when": "view==editbox.views.documents",
                     "group": "navigation"
                 }
             ],
@@ -177,24 +132,9 @@
                     "group": "1_actions"
                 },
                 {
-                    "command": "editbox.command.changeRepositoryFolder",
-                    "when": "view==editbox.views.Repository",
-                    "group": "1_actions"
-                },
-                {
-                    "command": "editbox.command.changeMasterRepository",
-                    "when": "view==editbox.views.Repository",
-                    "group": "1_actions"
-                },
-                {
                     "command": "editbox.command.showInSourceManager",
                     "when": "view==editbox.views.documents||view==editbox.views.Repository",
                     "group": "2_actions"
-                },
-                {
-                    "command": "editbox.command.showDiff",
-                    "when": "view==editbox.views.documents",
-                    "group": "3_actions"
                 }
             ]
         },
@@ -210,45 +150,28 @@
         },
         "viewsWelcome": [
             {
-                "view": "editbox.views.enableGit",
-                "contents": "1. Please the Check git tool is installed,if no-installed please click [link](https://git-scm.com/downloads) download and finish install .\n 2. If inestalled but no enable VSCode Git,please the enabled VSCode Git \n [Enabled Git](command:editbox.command.enableVSCodeGit)",
-                "when": "!config.git.enabled"
-            },
-            {
                 "view": "editbox.views.Repository",
                 "contents": "No found Repository \n[Add Repository](command:editbox.command.addRepository)",
-                "when": "config.git.enabled"
+                "when": "!editbox.work.repositorys.master"
             },
             {
                 "view": "editbox.views.documents",
-                "contents": "Don't Select Master Repository Or No Found Files",
-                "when": "config.git.enabled"
+                "contents": "Please check the folder  associated  with the repository is exist !",
+                "when": "!editbox.work.dcoments.word"
             }
         ],
         "views": {
             "edit-box-panel": [
                 {
-                    "id": "editbox.views.enableGit",
-                    "name": "Enable Git",
-                    "when": "!config.git.enabled",
-                    "visibility": "visible"
-                },
-                {
-                    "id": "editbox.views.initializeRepository",
-                    "name": "Enable Git",
-                    "when": "!config.git.enabled&&editbox.work.repositorys.master==''",
-                    "visibility": "visible"
-                },
-                {
                     "id": "editbox.views.documents",
                     "name": "Documents",
-                    "when": "config.git.enabled",
+                    "when": "editbox.enabled",
                     "visibility": "visible"
                 },
                 {
                     "id": "editbox.views.Repository",
-                    "name": "Store Repository",
-                    "when": "config.git.enabled",
+                    "name": "Repository",
+                    "when": "editbox.enabled",
                     "visibility": "visible"
                 }
             ]
@@ -257,12 +180,12 @@
     "scripts": {
         "compile": "webpack",
         "watch": "webpack --watch",
-        "vscode:prepublish": "npm run package",
+        "vscode:prepublish": "webpack --mode production --devtool hidden-source-map",
         "package": "vsce package",
         "publish": "vsce publish"
     },
     "devDependencies": {
-        "@types/vscode": "^1.72.0",
+        "@types/vscode": "^1.51.0",
         "@types/glob": "^8.0.0",
         "@types/mocha": "^10.0.0",
         "@types/node": "16.x",

@@ -1,14 +1,9 @@
 import { RepositoryType, MessageAlertType } from "@/common/Enums";
 import {
-    SetRepositoryPropertyResult,
     WorkRepositoryOptions,
     Uri,
     InputBoxValidationSeverity,
-    Task,
-    ShellExecution,
-    tasks,
-    TaskGroup,
-    TaskScope
+    Result
 } from "@/common/Types";
 import { NodeStorageRepositoryTreeViewProvider } from "@/views/Repository";
 import { selectFolder } from "./File";
@@ -27,7 +22,7 @@ export function getRepositoryList(): WorkRepositoryOptions[] {
 /**
  * 刷新仓库视图
  */
-export function refreshRepositoryList() {
+export function refreshRepositorysView() {
     //获取视图
     const provider = getSystemStoreModule().commit<NodeStorageRepositoryTreeViewProvider>(
         "getTreeViewProvider",
@@ -42,7 +37,7 @@ export function refreshRepositoryList() {
  * @param value
  * @returns
  */
-export function resetRepositoryList(value: WorkRepositoryOptions[]): Thenable<void> {
+export function setRepositoryList(value: WorkRepositoryOptions[]): Thenable<void> {
     return setConfiguration("work.repositorys", value);
 }
 
@@ -51,7 +46,7 @@ export function resetRepositoryList(value: WorkRepositoryOptions[]): Thenable<vo
  * @param value 值
  * @param index 下标
  */
-export function updateRepository(value: WorkRepositoryOptions, index?: number): Thenable<void> {
+export function setRepository(value: WorkRepositoryOptions, index?: number): Thenable<void> {
     const list = getRepositoryList();
     index ||= list.findIndex((item) => item.name === value.name);
 
@@ -75,28 +70,41 @@ export function getRepository(name: string): WorkRepositoryOptions | undefined {
 
 /**
  * 更改主仓库
- * @param name
+ * @param name 目标仓库
  * @returns
  */
-export function changeMasterRepository(name: string): Thenable<void> {
-    const repositoryList = getRepositoryList();
+export function changeMasterRepository(name?: string): Thenable<void> {
+    let repositoryList = getRepositoryList();
 
-    const masterIndex = repositoryList.findIndex((item) => item.master);
-    if (masterIndex >= 0) {
-        const master = repositoryList[masterIndex];
-        master.master = false;
-        repositoryList[masterIndex] = master;
+    //判断目标仓库是否存在
+    const target = repositoryList.find((item) => item.name === name);
+    let masterName = "";
+
+    if (target && name) {
+        repositoryList = repositoryList.map((item) => {
+            item.master = item.name === name;
+            return item;
+        });
+        masterName = target.name;
+    } else {
+        const masterTarget = repositoryList.find((item) => item.master);
+        //判断是否存在master仓库，不存在默认第一个
+        if (!masterTarget) {
+            repositoryList = repositoryList.map((item, index) => {
+                if (index <= 0) {
+                    masterName = item.name;
+                }
+                item.master = index <= 0;
+                return item;
+            });
+        } else {
+            masterName = masterTarget.name;
+        }
     }
 
-    const targetIndex = repositoryList.findIndex((item) => item.name === name);
-    if (targetIndex >= 0) {
-        const target = repositoryList[targetIndex];
-        target.master = true;
-        repositoryList[targetIndex] = target;
-    }
-
-    return resetRepositoryList(repositoryList).then(() => {
-        return setConfiguration("work.repositorys.master", name);
+    //更新仓库
+    return setRepositoryList(repositoryList).then(() => {
+        return setConfiguration("work.repositorys.master", masterName);
     });
 }
 
@@ -105,73 +113,100 @@ export function changeMasterRepository(name: string): Thenable<void> {
  * @param name  Repository Alias
  * @return
  */
-export function setRepositoryAlias(name?: string): Thenable<SetRepositoryPropertyResult> {
-    const repositoryList: WorkRepositoryOptions[] = getRepositoryList();
+export function setRepositoryAlias(name?: string): Thenable<Result<String>> {
 
-    let targetRepoIndex = repositoryList.findIndex((item) => item.name === name);
+    const repositoryList = getRepositoryList();
 
     return inputAlert({
         title: "Set Repository Alias",
         placeHolder: "Repository Alias",
-        value: targetRepoIndex >= 0 ? repositoryList[0].name : undefined,
         prompt: "Repository Alias",
         validateInput(value) {
-            return value
-                ? null
-                : {
-                      message: "The Repository Alias don't null",
-                      severity: InputBoxValidationSeverity.Error
-                  };
+
+            if (!value) {
+                return {
+                    message: "The Repository Alias don't null",
+                    severity: InputBoxValidationSeverity.Error
+                };
+            }
+
+            const item = repositoryList.find(item => item.name === value);
+            if (item) {
+                return {
+                    message: `${item.name} Already exists`,
+                    severity: InputBoxValidationSeverity.Error
+                };
+            }
+
+            return null;
         }
     }).then((value) => {
-        targetRepoIndex = repositoryList.findIndex((item) => item.name === value);
 
-        //新值重复
-        if (targetRepoIndex >= 0 && value) {
-            return {
-                name: value,
-                result: 0
-            };
-        }
+        console.log(value);
 
-        if (value && name) {
-            //修改——有值
-            const index = repositoryList.findIndex((item) => item.name === name);
-            const targetRepo = repositoryList[index];
-            targetRepo.name = value;
-            updateRepository(targetRepo, index);
-            return {
-                name,
-                result: 1
-            };
-        } else if (value && !name) {
-            //新增——有值
-            const isMaster = repositoryList.length === 0;
-            updateRepository({ name: value, master: isMaster, type: RepositoryType.Local }).then(
-                () => {
-                    if (isMaster) {
-                        changeMasterRepository(value);
-                    }
-                }
-            );
 
-            return {
-                name: value,
-                result: 2
-            };
-        } else if (!value && name) {
-            //修改——没值
-            return {
-                name,
-                result: 3
-            };
+        const result: Result<String> = {};
+
+        if (name) {
+            if (value) {
+
+            }
         } else {
-            //新增——没值
-            return {
-                name: "",
-                result: 4
-            };
+
         }
+
+        // if (!value) { result.data = undefined };
+
+        return result;
+
+        // targetRepoIndex = repositoryList.findIndex((item) => item.name === value);
+
+        // //新值重复
+        // if (targetRepoIndex >= 0 && value) {
+        //     return {
+        //         name: value,
+        //         result: 0
+        //     };
+        // }
+
+        // if (value && name) {
+        //     //修改——有值
+        //     const index = repositoryList.findIndex((item) => item.name === name);
+        //     const targetRepo = repositoryList[index];
+        //     targetRepo.name = value;
+        //     setRepository(targetRepo, index);
+        //     return {
+        //         name,
+        //         result: 1
+        //     };
+        // } else if (value && !name) {
+        //     //新增——有值
+        //     const isMaster = repositoryList.length === 0;
+        //     setRepository({ name: value, master: isMaster, type: RepositoryType.Local }).then(
+        //         () => {
+        //             if (isMaster) {
+        //                 changeMasterRepository(value);
+        //             }
+        //         }
+        //     );
+
+        //     return {
+        //         name: value,
+        //         result: 2
+        //     };
+        // } else if (!value && name) {
+        //     //修改——没值
+        //     return {
+        //         name,
+        //         result: 3
+        //     };
+        // } else {
+        //     //新增——没值
+        //     return {
+        //         name: "",
+        //         result: 4
+        //     };
+        // }
     });
 }
 
@@ -187,10 +222,10 @@ export function setRepositoryType(name: string): Thenable<string | undefined> {
     }).then((value) => {
         const targetRepo = getRepository(name);
         if (targetRepo && value) {
-            targetRepo.type = <RepositoryType>value;
-            return updateRepository(targetRepo).then(() => {
-                return value;
-            });
+            // targetRepo.type = <RepositoryType>value;
+            // return setRepository(targetRepo).then(() => {
+            //     return value;
+            // });
         } else {
             return undefined;
         }
@@ -210,7 +245,7 @@ export function setRepositoryLocalFolder(
         const targetRepo = getRepository(name);
         if (targetRepo && folder) {
             targetRepo.folder = folder.fsPath || "";
-            return updateRepository(targetRepo).then(() => folder);
+            return setRepository(targetRepo).then(() => folder);
         } else {
             return folder;
         }

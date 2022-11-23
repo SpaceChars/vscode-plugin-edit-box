@@ -59,9 +59,7 @@ export function setConfiguration(
     scope?: ConfigurationTarget
 ): Thenable<void> {
     const config = getGlobalConfiguration();
-    scope ||= ConfigurationTarget.Global;
-
-    return config.update(key, value, scope);
+    return config.update(key, value, (scope ||= ConfigurationTarget.Global), true);
 }
 
 /**

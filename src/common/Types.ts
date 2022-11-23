@@ -14,29 +14,24 @@ export interface CommandOptions {
 // export type RepositoryType = "Local" | "Remote";
 
 /**
- * 设置仓库属性结果
+ * 返回结果
  */
-export interface SetRepositoryPropertyResult {
-    /**
-     * 仓库名
-     */
-    name: string;
+export interface Result<T> {
 
     /**
-     * 值
+     * 编码
      */
-    value?: string;
+    code?: string;
 
     /**
-     * 结果类型
-     * 0：新值重复
-     * 1：修改——有值
-     * 2：新增——有值
-     * 3：修改——没值
-     * 4：新增——没值
-     * 5: 仓库不存在
+     * 结果
      */
-    result: number;
+    data?: T;
+
+    /**
+     * 描述
+     */
+    message?: string;
 }
 
 /**
@@ -46,7 +41,7 @@ export interface WorkRepositoryOptions {
     name: string;
     folder?: string;
     master?: boolean;
-    type: RepositoryType;
+    // type: RepositoryType;
 }
 
 /**

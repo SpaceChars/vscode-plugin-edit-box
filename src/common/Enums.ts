@@ -19,6 +19,6 @@ export enum ViewType {
  * 仓库类型
  */
 export enum RepositoryType {
-    Local = "local",
+    Local = "Local",
     Remote = "Remote"
 }
